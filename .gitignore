@@ -1,0 +1,20 @@
+# C build artifacts
+impl/test_vector
+impl/test_vector.exe
+*.o
+*.obj
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Experiment outputs (regenerate with `make reproduce`)
+python/*_results*.txt
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

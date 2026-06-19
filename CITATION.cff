@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this toolkit, please cite it as below."
+title: "ARADI cryptanalysis toolkit"
+authors:
+  - family-names: "Pham"
+    given-names: "Manh Hoang"
+abstract: >-
+  Reproducible tooling for cube cryptanalysis of the ARADI low-latency block
+  cipher (NSA, 2024): a verified C reference implementation, an MILP
+  verification of the AABB cube-distinguisher (5 rounds), and a practical cube
+  attack on a modified 6-round key schedule recovering a 32-bit pair (u, l).
+  The toolkit does not break full ARADI and does not recover the 256-bit
+  master key.
+keywords:
+  - cryptanalysis
+  - cube attack
+  - ARADI
+  - block cipher
+  - MILP
+license: MIT
+date-released: "2026-06-19"
