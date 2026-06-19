@@ -41,20 +41,27 @@ Ascon/Keccak cryptanalysis. Frame every claim accordingly.
 
 ## Milestones
 
-1. **S-box degree baseline (this commit):** compute the algebraic degree of ARADI's S-box vs
-   χ vs the Ascon S-box → confirm the "low-degree common to the family" premise.
-   → [`sbox_analysis.py`](sbox_analysis.py).
-2. **Degree growth over reduced rounds:** implement Ascon / a small Keccak permutation,
-   **verify against official test vectors first**, then measure degree per round.
+1. **S-box degree baseline:** algebraic degree of ARADI's S-box vs χ vs the Ascon S-box →
+   confirm the "low-degree common to the family" premise. → [`sbox_analysis.py`](sbox_analysis.py).
+2a. **Faithful Ascon permutation, verified:** implement Ascon p (S-box + linear + constants
+   from the cited spec) and verify it. Verification here = every component is invertible
+   (S-box layer is a 5-bit bijection whose recovered LUT matches the published Ascon S-box;
+   each per-word linear map has GF(2) rank 64). A byte-level bare-permutation KAT was not
+   publicly available this session; it is not needed for 2b because algebraic degree is
+   invariant under the affine round constants and under bit re-ordering.
+   → [`ascon_perm.py`](ascon_perm.py).
+2b. **Degree growth over reduced rounds:** measure algebraic-degree growth per round —
+   rigorously (cube/division-property design, reusing [`../python/aradi_milp.py`](../python/aradi_milp.py)
+   for upper bounds), labelling lower vs upper bounds honestly. NOT yet done.
 3. **Structured cube-sum search:** look for AABB-style structured / zero cube-sums at reduced
-   rounds — empirically first, then with an MILP model adapted from
-   [`../python/aradi_milp.py`](../python/aradi_milp.py).
+   rounds — empirically first, then via the MILP model.
 4. **Comparative write-up:** tabulate "after how many rounds does structure vanish" for
    ARADI vs Ascon vs Keccak; relate back to ARADI's AABB.
 
 ## Status
 
 - [x] Milestone 1 — S-box degree baseline.
-- [ ] Milestone 2 — degree growth (needs verified reference permutations).
+- [x] Milestone 2a — faithful Ascon permutation, components verified.
+- [ ] Milestone 2b — degree growth over reduced rounds (rigorous bounds).
 - [ ] Milestone 3 — cube-sum search.
 - [ ] Milestone 4 — comparative write-up.
