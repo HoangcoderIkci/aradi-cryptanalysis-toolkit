@@ -1,20 +1,21 @@
-# Generalising AABB to the Toffoli / χ cipher family  (roadmap — module ②)
+# Module ②: AABB / cube across the Toffoli · χ family
 
-**Question.** The AABB cube-distinguisher in ARADI comes from its Toffoli-gate S-box
-(algebraic degree 3, built from 4 Toffoli gates). Is an AABB-style low-degree /
-byte-structure property a **structural feature of the whole Toffoli / χ family**, rather
-than a quirk of ARADI?
+Does the AABB-style structured cube-sum that ARADI exhibits generalise to χ-based
+permutations (Ascon, Keccak)? Full design, honest scope and milestones: **[`PLAN.md`](PLAN.md)**.
 
-**Plan.**
-1. Pick 2–3 other Toffoli-gate / χ-based primitives at a *reduced-round* scope, e.g.
-   Simon (AND-based), Xoodoo and Ascon/Keccak's χ layer.
-2. Reuse the MILP propagation model in [`../python/aradi_milp.py`](../python/aradi_milp.py)
-   to search for analogous low-degree cube distinguishers in each.
-3. Tabulate: does a byte/word-structured cube sum appear, after how many rounds, with what
-   random-case probability?
-4. Write up as a small comparative study: *what the Toffoli/χ structure buys an attacker.*
+> **Scope:** reduced-round *structural distinguishers / degree measurements* only. This does
+> **not** attack Ascon or Keccak (both NIST standards), and they are permutations — so this
+> is not key recovery. See [`PLAN.md`](PLAN.md) §"Honest scope".
 
-**Honesty boundary.** This is a **structural comparison**, not an attack on any of those
-ciphers. Report distinguishers on reduced rounds only; never claim to break a primitive.
+## Milestone 1 — algebraic-degree baseline ✅
 
-**Status:** not started. Owner: —.
+`python sbox_analysis.py` (verified, bijection + degree checks pass):
+
+| S-box | bits | algebraic degree |
+|---|---|---|
+| ARADI (4 Toffoli gates) | 4 | **3** |
+| χ (Keccak / Ascon core) | 5 | **2** |
+| Ascon S-box (affine ∘ χ) | 5 | **2** |
+
+→ The whole family is **low algebraic degree**, which is the premise that makes a cube
+methodology applicable across it. Next: degree growth over reduced rounds (Milestone 2).
