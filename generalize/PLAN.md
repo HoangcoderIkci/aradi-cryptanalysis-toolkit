@@ -50,11 +50,14 @@ Ascon/Keccak cryptanalysis. Frame every claim accordingly.
    publicly available this session; it is not needed for 2b because algebraic degree is
    invariant under the affine round constants and under bit re-ordering.
    → [`ascon_perm.py`](ascon_perm.py).
-2b. **Degree growth over reduced rounds:** measure algebraic-degree growth per round —
-   rigorously (cube/division-property design, reusing [`../python/aradi_milp.py`](../python/aradi_milp.py)
-   for upper bounds), labelling lower vs upper bounds honestly. NOT yet done.
-3. **Structured cube-sum search:** look for AABB-style structured / zero cube-sums at reduced
-   rounds — empirically first, then via the MILP model.
+2b. **Degree growth over reduced rounds (lower bounds):** measure the exact degree of the
+   round function restricted to a set of input bits (= a lower bound on the true degree),
+   with sanity anchors (r0=1, r1=S-box degree). Done in [`degree_growth.py`](degree_growth.py):
+   ARADI 1,3,6,9 vs Ascon 1,2,4,8. Upper bounds via division property are folded into M3.
+3. **Tight bounds + structured cube-sum search:** add division-property (MILP) **upper**
+   bounds on degree (reusing [`../python/aradi_milp.py`](../python/aradi_milp.py)) to pair
+   with the M2b lower bounds; then look for an AABB-style structured / zero cube-sum at
+   reduced rounds.
 4. **Comparative write-up:** tabulate "after how many rounds does structure vanish" for
    ARADI vs Ascon vs Keccak; relate back to ARADI's AABB.
 
@@ -62,6 +65,6 @@ Ascon/Keccak cryptanalysis. Frame every claim accordingly.
 
 - [x] Milestone 1 — S-box degree baseline.
 - [x] Milestone 2a — faithful Ascon permutation, components verified.
-- [ ] Milestone 2b — degree growth over reduced rounds (rigorous bounds).
-- [ ] Milestone 3 — cube-sum search.
+- [x] Milestone 2b — degree-growth **lower bounds** (ARADI 1,3,6,9 vs Ascon 1,2,4,8).
+- [ ] Milestone 3 — division-property upper bounds + cube-sum search.
 - [ ] Milestone 4 — comparative write-up.
