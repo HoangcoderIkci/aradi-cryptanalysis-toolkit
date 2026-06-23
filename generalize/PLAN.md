@@ -66,5 +66,7 @@ Ascon/Keccak cryptanalysis. Frame every claim accordingly.
 - [x] Milestone 1 — S-box degree baseline.
 - [x] Milestone 2a — faithful Ascon permutation, components verified.
 - [x] Milestone 2b — degree-growth **lower bounds** (ARADI 1,3,6,9 vs Ascon 1,2,4,8).
-- [ ] Milestone 3 — division-property upper bounds + cube-sum search.
-- [ ] Milestone 4 — comparative write-up.
+- [x] Milestone 3 — division-property **upper bounds** (`ascon_milp.py`, vs Ascon v1.2 spec Table 16 =
+      2,4,8; ARADI via `../python/aradi_milp.py`) + integral/zero-sum demo (`zerosum_demo.py`).
+      Two-sided table in `degree_bounds.py`: ARADI [3],[6,8],[9,22] vs Ascon exact 2,4,8.
+- [x] Milestone 4 — comparative write-up: [`COMPARISON.md`](COMPARISON.md).

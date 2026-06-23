@@ -1,54 +1,53 @@
 # Module ②: AABB / cube across the Toffoli · χ family
 
-Does the AABB-style structured cube-sum that ARADI exhibits generalise to χ-based
-permutations (Ascon, Keccak)? Full design, honest scope and milestones: **[`PLAN.md`](PLAN.md)**.
+Does the low-degree behaviour behind ARADI's AABB cube-distinguisher generalise to the χ-based
+permutations Ascon and Keccak? **Full comparison: [`COMPARISON.md`](COMPARISON.md).** Design and
+honest scope: [`PLAN.md`](PLAN.md).
 
 > **Scope:** reduced-round *structural distinguishers / degree measurements* only. This does
-> **not** attack Ascon or Keccak (both NIST standards), and they are permutations — so this
-> is not key recovery. See [`PLAN.md`](PLAN.md) §"Honest scope".
+> **not** attack Ascon or Keccak (both NIST standards); they are permutations, so this is not
+> key recovery. Cross-validated against the Ascon specification.
 
-## Milestone 1 — algebraic-degree baseline of the S-boxes ✅
+## Results
 
-`python sbox_analysis.py` (bijection + degree checks pass):
+**Milestone 1 — S-box degree** (`sbox_analysis.py`): ARADI (Toffoli) **3**, χ (Ascon/Keccak) **2**.
 
-| S-box | bits | algebraic degree |
-|---|---|---|
-| ARADI (4 Toffoli gates) | 4 | **3** |
-| χ (Keccak / Ascon core) | 5 | **2** |
-| Ascon S-box (affine ∘ χ) | 5 | **2** |
+**Milestone 2a — Ascon permutation** (`ascon_perm.py`): S-box LUT matches the published Ascon
+S-box, all components invertible. Component-level verification (no byte-level KAT this session;
+the degree study is invariant under round constants and bit order).
 
-→ The whole family is **low algebraic degree** — the premise that makes a cube methodology
-applicable across it.
+**Milestones 2b + 3 — algebraic degree, two-sided bounds** (`degree_growth.py`,
+`ascon_milp.py`, `degree_bounds.py`):
 
-## Milestone 2a — faithful Ascon permutation, verified ✅
+| r | ARADI lower | ARADI upper | Ascon lower | Ascon upper |
+|---|---|---|---|---|
+| 1 | 3 | **3** | 2 | **2** |
+| 2 | 6 | **8** | 4 | **4** |
+| 3 | 9 | **22** | 8 | **8** |
 
-`python ascon_perm.py`. Parameters (rotations, round constants) from the official spec +
-NIST SP 800-232, cross-checked against OpenTitan. Verified by component invertibility: the
-recovered S-box LUT `[0x4,0xb,0x1f,0x14,…]` **matches the published Ascon S-box**, and each
-per-word linear map has GF(2) rank 64. (A byte-level KAT was not needed — algebraic degree is
-invariant under the affine round constants and bit re-ordering.)
+Upper bounds via bit-based division-property MILP; the Ascon column reproduces the Ascon v1.2
+design-spec degree bound (Table 16: deg ≤ 2^r for r ≤ 8). **Ascon: lower = upper = 2^r → degree
+exact (2,4,8)** (exactness is the toolkit's two-sided result, not proven by the spec). **ARADI:
+higher, with a gap → its degree-3 S-box raises the degree faster per round.**
 
-## Milestone 2b — algebraic-degree growth (lower bounds) ✅
+**Milestone 3b — integral / zero-sum** (`zerosum_demo.py`): a cube of dimension 2^r + 1 zero-sums
+after r rounds of Ascon (r = 1,2,3), the family-wide consequence of low degree.
 
-`python degree_growth.py` (~5 s). We measure the exact degree of the output restricted to a
-chosen set of input bits (all bits of a few state columns), a **lower bound** on the true
-degree. Sanity-checked: round 0 → degree 1, round 1 → exactly the S-box degree.
+## What transfers
 
-| rounds | ARADI (Toffoli, S-box deg 3) | Ascon (χ, S-box deg 2) |
-|---|---|---|
-| 0 | 1 | 1 |
-| 1 | **3** | **2** |
-| 2 | 6 | 4 |
-| 3 | 9 | 8 |
+The link *low S-box degree → cube / zero-sum distinguisher* is shared across the Toffoli/χ family.
+ARADI's **AABB byte-equality** form, however, depends on its four-word layout and 16-bit-half
+linear layer, so it is ARADI-specific; Ascon's analogue is a plain zero-sum integral. Details and
+references in [`COMPARISON.md`](COMPARISON.md).
 
-→ At round 1 the degree equals the S-box degree (3 vs 2). Beyond that, ARADI's higher-degree
-Toffoli S-box drives the lower bound up faster (1,3,6,9) than Ascon's χ (1,2,4,8). These are
-**lower bounds**, not a fixed per-round multiplier.
+## Files
 
-## Next
-
-- **Tight upper bounds** on degree via the division property (MILP), reusing
-  [`../python/aradi_milp.py`](../python/aradi_milp.py) — turns the lower bounds above into
-  two-sided bounds (Milestone 3).
-- **Structured cube-sum search** for an AABB analogue at reduced rounds, then the comparative
-  write-up (Milestones 3–4).
+```
+sbox_analysis.py   S-box algebraic degrees (M1)
+ascon_perm.py      verified Ascon permutation (M2a)
+degree_growth.py   degree lower bounds via restriction (M2b)
+ascon_milp.py      Ascon degree upper bounds, division-property MILP (M3) — vs Ascon v1.2 Table 16
+degree_bounds.py   combined two-sided table (M2b + M3)
+zerosum_demo.py    integral / zero-sum distinguisher on reduced Ascon (M3b)
+PLAN.md  COMPARISON.md
+```
